@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pristal — Minecraft Network</title>
+  <meta name="description" content="Pristal — сеть Minecraft серверов: SPM, PvP и Hard.">
+  <meta name="theme-color" content="#69e56f">
+  <meta name="robots" content="index,follow">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:#f5f7fb;background:#070a0f;line-height:1.5;overflow-x:hidden
+    }
+    body:before{
+      content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;
+      background-image:linear-gradient(90deg,#fff 1px,transparent 1px),linear-gradient(#fff 1px,transparent 1px);
+      background-size:32px 32px
+    }
+    a{text-decoration:none;color:inherit}
+    .container{width:min(1120px,92%);margin:auto}
+    header{
+      position:fixed;top:0;left:0;right:0;z-index:20;
+      background:rgba(7,10,15,.78);backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(255,255,255,.08)
+    }
+    nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .logo{font-size:25px;font-weight:900;letter-spacing:.08em}
+    .logo span{color:#69e56f}
+    .navlinks{display:flex;gap:24px;color:#b9c0ca;font-size:14px}
+    .navlinks a:hover{color:#fff}
+    .hero{min-height:760px;display:grid;place-items:center;text-align:center;padding:130px 0 80px;
+      background:radial-gradient(circle at 50% 25%,rgba(70,220,92,.16),transparent 38%),
+                 radial-gradient(circle at 15% 80%,rgba(50,130,255,.12),transparent 30%)}
+    .badge{display:inline-flex;padding:8px 14px;border:1px solid rgba(105,229,111,.35);
+      background:rgba(105,229,111,.08);border-radius:999px;color:#8bf18f;font-size:13px;margin-bottom:22px}
+    h1{font-size:clamp(58px,11vw,120px);line-height:.9;letter-spacing:-.07em}
+    h1 span{color:#69e56f;text-shadow:0 0 35px rgba(105,229,111,.25)}
+    .hero p{max-width:650px;margin:28px auto;color:#aab2be;font-size:18px}
+    .buttons{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+    .btn{padding:13px 20px;border-radius:12px;font-weight:800;border:1px solid rgba(255,255,255,.1);
+      background:#111721;transition:.2s;cursor:pointer}
+    .btn:hover{transform:translateY(-2px);border-color:#69e56f}
+    .btn.primary{background:#69e56f;color:#061008;border-color:#69e56f}
+    section{padding:95px 0}
+    .section-title{text-align:center;margin-bottom:45px}
+    .section-title h2{font-size:42px;letter-spacing:-.04em}
+    .section-title p{color:#8993a1;margin-top:8px}
+    .servers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{
+      position:relative;padding:28px;border-radius:22px;overflow:hidden;
+      background:linear-gradient(145deg,#111720,#0b0f15);
+      border:1px solid rgba(255,255,255,.08)
+    }
+    .card:after{content:"";position:absolute;width:150px;height:150px;right:-60px;top:-60px;
+      background:#69e56f;border-radius:50%;filter:blur(60px);opacity:.12}
+    .server-icon{font-size:34px;margin-bottom:16px}
+    .card h3{font-size:27px}.card p{color:#929baa;margin:10px 0 22px}
+    .status{display:flex;align-items:center;gap:8px;color:#8ef195;font-size:13px;margin-bottom:18px}
+    .dot{width:8px;height:8px;border-radius:50%;background:#69e56f;box-shadow:0 0 12px #69e56f}
+    .ip{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 13px;
+      border-radius:10px;background:#070a0f;color:#dce2e9;font-family:monospace;font-size:13px}
+    .copy{border:0;background:#1c2530;color:#fff;border-radius:8px;padding:7px 10px;cursor:pointer}
+    .creator{display:grid;grid-template-columns:1fr 1.5fr;gap:30px;align-items:center}
+    .creator-box{padding:38px;border-radius:26px;background:linear-gradient(145deg,#101720,#0b0f14);
+      border:1px solid rgba(255,255,255,.08)}
+    .avatar{width:110px;height:110px;border-radius:28px;display:grid;place-items:center;font-size:45px;
+      font-weight:900;background:linear-gradient(135deg,#69e56f,#287bff);margin-bottom:22px;color:#07100a}
+    .creator h2{font-size:40px}.creator h2 span{color:#69e56f}.creator p{color:#99a2af;margin:12px 0 25px}
+    .socials{display:flex;flex-wrap:wrap;gap:10px}
+    .social{padding:12px 15px;border-radius:11px;background:#151c26;border:1px solid rgba(255,255,255,.08);font-weight:700}
+    .social:hover{border-color:#69e56f}
+    .social.youtube:hover{border-color:#ff4b4b}.social.twitch:hover{border-color:#a970ff}
+    .social.telegram:hover{border-color:#31a8e0}.social.discord:hover{border-color:#7289da}
+
+
+    .leader-tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+    .leader-tab{border:1px solid rgba(255,255,255,.09);background:#10161f;color:#aeb7c3;padding:11px 18px;
+      border-radius:11px;cursor:pointer;font-weight:800}
+    .leader-tab.active{background:#69e56f;color:#061008;border-color:#69e56f}
+    .leader-panel{display:none}.leader-panel.active{display:block}
+    .leader-table-wrap{overflow-x:auto;border:1px solid rgba(255,255,255,.08);border-radius:20px;background:#0d1219}
+    .leader-table{width:100%;border-collapse:collapse;min-width:600px}
+    .leader-table th,.leader-table td{padding:16px 18px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+    .leader-table th{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#737d8b}
+    .leader-table td{color:#dce2e9}
+    .leader-table tr:last-child td{border-bottom:0}
+    .place{font-weight:900;width:70px}.gold{color:#ffd65a}.silver{color:#c8d0db}.bronze{color:#d99462}
+    .player{font-weight:800}.stat{color:#8ef195;font-family:monospace}
+    .leader-note{text-align:center;color:#778190;font-size:13px;margin-top:16px}
+    .donate-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .donate-card{position:relative;padding:30px;border-radius:22px;background:linear-gradient(145deg,#121923,#0b0f15);
+      border:1px solid rgba(255,255,255,.08);overflow:hidden}
+    .donate-card.featured{border-color:rgba(105,229,111,.45);box-shadow:0 0 35px rgba(105,229,111,.08)}
+    .donate-card .tag{display:inline-block;padding:5px 9px;border-radius:999px;background:rgba(105,229,111,.1);
+      color:#8bf18f;font-size:11px;font-weight:900;letter-spacing:.06em;margin-bottom:13px}
+    .donate-card h3{font-size:25px}.donate-card p{color:#929baa;margin:8px 0 18px}
+    .price{font-size:34px;font-weight:900;margin:18px 0}.price small{font-size:13px;color:#778190;font-weight:600}
+    .perks{list-style:none;display:grid;gap:9px;color:#c8ced7;margin:18px 0 24px}
+    .perks li:before{content:"✓";color:#69e56f;font-weight:900;margin-right:9px}
+    .buy{width:100%;text-align:center;display:block}
+    .donate-note{text-align:center;color:#778190;font-size:13px;margin-top:22px}
+    .shop-banner{margin-bottom:25px;padding:18px 20px;border-radius:16px;background:#0d141c;border:1px solid rgba(255,255,255,.07);
+      color:#aeb7c3;text-align:center}
+    @media(max-width:800px){.donate-grid{grid-template-columns:1fr}}
+
+    .media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .media-card{overflow:hidden;border-radius:22px;background:linear-gradient(145deg,#111720,#0b0f15);border:1px solid rgba(255,255,255,.08);transition:.2s}
+    .media-card:hover{transform:translateY(-3px);border-color:rgba(105,229,111,.35)}
+    .media-preview{height:190px;display:grid;place-items:center;position:relative;background:radial-gradient(circle at 50% 45%,rgba(105,229,111,.18),transparent 45%),#090d13}
+    .live-preview{background:radial-gradient(circle at 50% 45%,rgba(255,65,65,.2),transparent 45%),#090d13}
+    .youtube-preview{background:radial-gradient(circle at 50% 45%,rgba(255,55,55,.18),transparent 45%),#090d13}
+    .archive-preview{background:radial-gradient(circle at 50% 45%,rgba(114,137,218,.2),transparent 45%),#090d13}
+    .media-icon{font-size:54px;opacity:.9}.live-badge,.video-badge,.archive-badge{position:absolute;top:14px;left:14px;padding:6px 9px;border-radius:8px;font-size:11px;font-weight:900;background:#191f28;color:#fff}.live-badge{background:#d63c3c}.video-badge{background:#b52c2c}.archive-badge{background:#39436a}
+    .media-body{padding:24px}.media-meta{font-size:11px;letter-spacing:.08em;color:#69e56f;font-weight:900}.media-body h3{font-size:23px;margin:7px 0}.media-body p{color:#929baa;margin:8px 0 18px}.media-btn{width:100%;text-align:center;display:block}
+    .media-tab{border:1px solid rgba(255,255,255,.09);background:#10161f;color:#aeb7c3;padding:11px 18px;border-radius:11px;cursor:pointer;font-weight:800}.media-tab.active{background:#69e56f;color:#061008;border-color:#69e56f}
+    .media-card.hidden{display:none}.media-creators{margin-top:22px}.media-creator-card{display:flex;align-items:center;gap:18px;padding:24px;border-radius:20px;background:#0d1219;border:1px solid rgba(255,255,255,.08)}.creator-mini-avatar{width:70px;height:70px;flex:0 0 70px;border-radius:18px;display:grid;place-items:center;font-weight:900;font-size:25px;background:linear-gradient(135deg,#69e56f,#287bff);color:#07100a}.media-creator-card h3{font-size:24px}.media-creator-card p{color:#929baa;margin:5px 0 12px}.media-note{text-align:center;color:#778190;font-size:13px;margin-top:20px}
+    @media(max-width:800px){.media-grid{grid-template-columns:1fr}.media-creator-card{align-items:flex-start}}
+    .recruit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .recruit-card{position:relative;padding:28px;border-radius:22px;background:linear-gradient(145deg,#111720,#0b0f15);border:1px solid rgba(255,255,255,.08);overflow:hidden}
+    .recruit-card:hover{border-color:rgba(105,229,111,.4);transform:translateY(-2px)}
+    .recruit-icon{font-size:34px;margin-bottom:15px}
+    .recruit-card h3{font-size:23px}.recruit-card p{color:#929baa;margin:8px 0 17px}
+    .recruit-list{list-style:none;display:grid;gap:7px;color:#c8ced7;font-size:14px;margin-bottom:20px}
+    .recruit-list li:before{content:"✓";color:#69e56f;font-weight:900;margin-right:8px}
+    .recruit-apply{width:100%;text-align:center;display:block}
+    .recruit-info{margin-top:22px;padding:22px;border-radius:18px;background:#0d141c;border:1px solid rgba(105,229,111,.18);text-align:center;color:#aeb7c3}
+    .recruit-info strong{color:#8bf18f}
+    @media(max-width:800px){.recruit-grid{grid-template-columns:1fr}}
+    .news{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .news .card small{color:#69e56f}.news .card h3{margin:9px 0}
+    footer{border-top:1px solid rgba(255,255,255,.08);padding:35px 0;color:#7f8997}
+    footer .container{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    @media(max-width:800px){
+      .navlinks{display:none}.servers,.news,.creator{grid-template-columns:1fr}
+      .hero{min-height:680px}.creator h2{font-size:32px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <nav>
+      <a class="logo" href="#">PRI<span>STAL</span></a>
+      <div class="navlinks">
+        <a href="#servers">Сервера</a>
+        <a href="#creator">Создатель</a>
+        <a href="#leaders">Лидеры</a>
+        <a href="#donate">Донат</a>
+        <a href="#media">Медийки</a>
+        <a href="#recruitment">Набор</a>
+        <a href="#news">Новости</a>
+        <a href="#contacts">Соцсети</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <div class="badge">⚡ MINECRAFT NETWORK</div>
+      <h1>PRI<span>STAL</span></h1>
+      <p>Сеть Minecraft серверов с разными стилями игры. Выбирай свой режим, заходи и начинай приключение.</p>
+      <div class="buttons">
+        <a class="btn primary" href="#servers">Выбрать сервер</a>
+        <a class="btn" href="#creator">Создатель Pristal</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="servers">
+    <div class="container">
+      <div class="section-title">
+        <h2>Наши серверы</h2>
+        <p>Три разных мира — один Pristal.</p>
+      </div>
+      <div class="servers">
+        <article class="card">
+          <div class="server-icon">⛏️</div>
+          <div class="status"><span class="dot"></span> Онлайн</div>
+          <h3>Pristal SPM</h3>
+          <p>Основное направление сети с собственными механиками и атмосферой.</p>
+          <div class="ip"><span>spm.pristal.ru</span><button class="copy" data-ip="spm.pristal.ru">Копировать</button></div>
+        </article>
+        <article class="card">
+          <div class="server-icon">⚔️</div>
+          <div class="status"><span class="dot"></span> Онлайн</div>
+          <h3>Pristal PvP</h3>
+          <p>Сражения, арены и напряжённые PvP-битвы с другими игроками.</p>
+          <div class="ip"><span>pvp.pristal.ru</span><button class="copy" data-ip="pvp.pristal.ru">Копировать</button></div>
+        </article>
+        <article class="card">
+          <div class="server-icon">☠️</div>
+          <div class="status"><span class="dot"></span> Онлайн</div>
+          <h3>Pristal Hard</h3>
+          <p>Сложный режим для тех, кто хочет настоящий вызов и риск.</p>
+          <div class="ip"><span>hard.pristal.ru</span><button class="copy" data-ip="hard.pristal.ru">Копировать</button></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="creator">
+    <div class="container">
+      <div class="creator">
+        <div class="creator-box">
+          <div class="avatar">МС</div>
+          <div class="badge">CREATOR</div>
+          <h2>Мр<span>Скринч</span></h2>
+          <p>Создатель серверной сети Pristal. На разных платформах использует разные ники — это один и тот же человек.</p>
+          <div class="socials">
+            <a class="social youtube" href="https://youtube.com/@skrenh" target="_blank" rel="noopener">▶ YouTube · @skrenh</a>
+            <a class="social twitch" href="https://www.twitch.tv/skrenhtv" target="_blank" rel="noopener">◉ Twitch · skrenhtv</a>
+          </div>
+        </div>
+        <div>
+          <div class="section-title" style="text-align:left;margin-bottom:18px">
+            <h2>Присоединяйся к Pristal</h2>
+            <p>Следи за новостями, обновлениями и общайся с игроками сети.</p>
+          </div>
+          <div class="socials" id="contacts">
+            <a class="social discord" href="https://discord.gg/jGNsNMfrD" target="_blank" rel="noopener">💬 Discord проекта</a>
+            <!-- ЗАМЕНИ href ниже на официальные ссылки Pristal -->
+            <a class="social telegram" href="https://t.me/skrenh" target="_blank" rel="noopener">✈ Telegram</a>
+            <a class="social discord" href="https://discord.gg/c7qHuGQPX" target="_blank" rel="noopener">◉ Discord</a>
+            <a class="social youtube" href="https://youtube.com/@skrenh" target="_blank" rel="noopener">▶ YouTube</a>
+            <a class="social twitch" href="https://www.twitch.tv/skrenhtv" target="_blank" rel="noopener">◉ Twitch</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <section id="leaders">
+    <div class="container">
+      <div class="section-title">
+        <h2>Таблица лидеров</h2>
+        <p>Лучшие игроки каждого режима Pristal.</p>
+      </div>
+
+      <div class="leader-tabs">
+        <button class="leader-tab active" data-panel="spm">⛏️ Pristal SPM</button>
+        <button class="leader-tab" data-panel="pvp">⚔️ Pristal PvP</button>
+        <button class="leader-tab" data-panel="hard">☠️ Pristal Hard</button>
+      </div>
+
+      <div class="leader-panel active" id="leader-spm">
+        <div class="leader-table-wrap">
+          <table class="leader-table">
+            <thead><tr><th>#</th><th>Игрок</th><th>Достижения</th><th>Рейтинг</th></tr></thead>
+            <tbody>
+              <tr><td class="place gold">1</td><td class="player">Игрок_1</td><td>—</td><td class="stat">0</td></tr>
+              <tr><td class="place silver">2</td><td class="player">Игрок_2</td><td>—</td><td class="stat">0</td></tr>
+              <tr><td class="place bronze">3</td><td class="player">Игрок_3</td><td>—</td><td class="stat">0</td></tr>
+              <tr><td class="place">4</td><td>Игрок_4</td><td>—</td><td class="stat">0</td></tr>
+              <tr><td class="place">5</td><td>Игрок_5</td><td>—</td><td class="stat">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="leader-panel" id="leader-pvp">
+        <div class="leader-table-wrap">
+          <table class="leader-table">
+            <thead><tr><th>#</th><th>Игрок</th><th>Убийства</th><th>Рейтинг</th></tr></thead>
+            <tbody>
+              <tr><td class="place gold">1</td><td class="player">PvP_Champion</td><td>0</td><td class="stat">0</td></tr>
+              <tr><td class="place silver">2</td><td class="player">Warrior_1</td><td>0</td><td class="stat">0</td></tr>
+              <tr><td class="place bronze">3</td><td class="player">Fighter_1</td><td>0</td><td class="stat">0</td></tr>
+              <tr><td class="place">4</td><td>Player_4</td><td>0</td><td class="stat">0</td></tr>
+              <tr><td class="place">5</td><td>Player_5</td><td>0</td><td class="stat">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="leader-panel" id="leader-hard">
+        <div class="leader-table-wrap">
+          <table class="leader-table">
+            <thead><tr><th>#</th><th>Игрок</th><th>Жизни</th><th>Дни выживания</th></tr></thead>
+            <tbody>
+              <tr><td class="place gold">1</td><td class="player">Hardcore_1</td><td>0</td><td class="stat">0</td></tr>
+              <tr><td class="place silver">2</td><td class="player">Hardcore_2</td><td>0</td><td class="stat">0</td></tr>
+              <tr><td class="place bronze">3</td><td class="player">Hardcore_3</td><td>0</td><td class="stat">0</td></tr>
+              <tr><td class="place">4</td><td>Survivor_4</td><td>0</td><td class="stat">0</td></tr>
+              <tr><td class="place">5</td><td>Survivor_5</td><td>0</td><td class="stat">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="leader-note">Сейчас таблицы заполнены демонстрационными данными. Для автоматического обновления нужен API/плагин статистики серверов.</p>
+    </div>
+  </section>
+
+  <section id="donate">
+    <div class="container">
+      <div class="section-title">
+        <h2>Донат-магазин</h2>
+        <p>Поддержи Pristal и получи дополнительные возможности.</p>
+      </div>
+
+      <div class="shop-banner">
+        💚 После выбора привилегии нажми кнопку оплаты — сайт перенесёт тебя на страницу оплаты СберБанка.
+      </div>
+
+      <div class="donate-grid">
+        <article class="donate-card">
+          <div class="tag">START</div>
+          <h3>Pristal VIP</h3>
+          <p>Хороший старт для игрока.</p>
+          <div class="price">99 ₽ <small>/ месяц</small></div>
+          <ul class="perks">
+            <li>VIP-префикс</li>
+            <li>Красивый цвет чата</li>
+            <li>Дополнительные команды</li>
+            <li>Бонус к игровому опыту</li>
+          </ul>
+          <a class="btn primary buy" href="https://www.sberbank.ru/ru/choise_bank?requisiteNumber=79380751380&bankCode=100000000111" target="_blank" rel="noopener">Оплатить VIP</a>
+        </article>
+
+        <article class="donate-card featured">
+          <div class="tag">POPULAR</div>
+          <h3>Pristal PREMIUM</h3>
+          <p>Больше возможностей и привилегий.</p>
+          <div class="price">199 ₽ <small>/ месяц</small></div>
+          <ul class="perks">
+            <li>Все возможности VIP</li>
+            <li>Премиум-префикс</li>
+            <li>Больше игровых бонусов</li>
+            <li>Приоритет при входе</li>
+            <li>Эксклюзивные косметические возможности</li>
+          </ul>
+          <a class="btn primary buy" href="https://www.sberbank.ru/ru/choise_bank?requisiteNumber=79380751380&bankCode=100000000111" target="_blank" rel="noopener">Оплатить PREMIUM</a>
+        </article>
+
+        <article class="donate-card">
+          <div class="tag">MAX</div>
+          <h3>Pristal ELITE</h3>
+          <p>Максимальный уровень поддержки.</p>
+          <div class="price">399 ₽ <small>/ месяц</small></div>
+          <ul class="perks">
+            <li>Все возможности PREMIUM</li>
+            <li>Уникальный Elite-префикс</li>
+            <li>Максимальные игровые бонусы</li>
+            <li>Расширенные команды</li>
+            <li>Особые косметические эффекты</li>
+          </ul>
+          <a class="btn primary buy" href="https://www.sberbank.ru/ru/choise_bank?requisiteNumber=79380751380&bankCode=100000000111" target="_blank" rel="noopener">Оплатить ELITE</a>
+        </article>
+      </div>
+
+      <p class="donate-note">Цены и состав привилегий можно изменить под реальные возможности серверов.</p>
+    </div>
+  </section>
+
+  <section id="media">
+    <div class="container">
+      <div class="section-title">
+        <h2>Медийки Pristal</h2>
+        <p>Стримы, ролики и записи стримов авторов, которые создают контент на серверах Pristal.</p>
+      </div>
+
+      <div class="media-tabs" style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:24px">
+        <button class="media-tab active" data-media="all">Все</button>
+        <button class="media-tab" data-media="live">🔴 Сейчас в эфире</button>
+        <button class="media-tab" data-media="videos">▶ Ролики</button>
+        <button class="media-tab" data-media="streams">📺 Записи стримов</button>
+      </div>
+
+      <div class="media-grid">
+        <article class="media-card" data-type="live">
+          <div class="media-preview live-preview">
+            <span class="live-badge">● LIVE</span>
+            <div class="media-icon">🎥</div>
+          </div>
+          <div class="media-body">
+            <div class="media-meta">TWITCH · skrenhtv</div>
+            <h3>Стримы Pristal</h3>
+            <p>Когда автор находится в эфире, здесь можно разместить актуальную трансляцию.</p>
+            <a class="btn primary media-btn" href="https://www.twitch.tv/skrenhtv" target="_blank" rel="noopener">Смотреть Twitch</a>
+          </div>
+        </article>
+
+        <article class="media-card" data-type="videos">
+          <div class="media-preview youtube-preview">
+            <span class="video-badge">YOUTUBE</span>
+            <div class="media-icon">▶</div>
+          </div>
+          <div class="media-body">
+            <div class="media-meta">YOUTUBE · @skrenh</div>
+            <h3>Новые ролики</h3>
+            <p>Видео с Pristal, обзоры обновлений, челленджи и другие ролики автора.</p>
+            <a class="btn primary media-btn" href="https://youtube.com/@skrenh" target="_blank" rel="noopener">Смотреть YouTube</a>
+          </div>
+        </article>
+
+        <article class="media-card" data-type="streams">
+          <div class="media-preview archive-preview">
+            <span class="archive-badge">АРХИВ</span>
+            <div class="media-icon">📺</div>
+          </div>
+          <div class="media-body">
+            <div class="media-meta">TWITCH · ЗАПИСИ</div>
+            <h3>Записи стримов</h3>
+            <p>Прошедшие трансляции Pristal можно смотреть в архиве канала.</p>
+            <a class="btn media-btn" href="https://www.twitch.tv/skrenhtv/videos" target="_blank" rel="noopener">Открыть записи</a>
+          </div>
+        </article>
+      </div>
+
+      <div class="media-creators">
+        <div class="media-creator-card">
+          <div class="creator-mini-avatar">МС</div>
+          <div>
+            <div class="media-meta">МЕДИЙКА PRISTAL</div>
+            <h3>МрСкринч</h3>
+            <p>YouTube: @skrenh · Twitch: skrenhtv</p>
+            <div class="socials">
+              <a class="social youtube" href="https://youtube.com/@skrenh" target="_blank" rel="noopener">▶ YouTube</a>
+              <a class="social twitch" href="https://www.twitch.tv/skrenhtv" target="_blank" rel="noopener">◉ Twitch</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="media-note">Раздел подготовлен для добавления других медийных игроков. Чтобы автоматически определять, кто сейчас в эфире, сайту потребуется подключение Twitch/YouTube API.</p>
+    </div>
+  </section>
+
+  <section id="recruitment">
+    <div class="container">
+      <div class="section-title">
+        <h2>Открыт набор в команду</h2>
+        <p>Хочешь развивать Pristal вместе с нами? Выбирай направление и подавай заявку.</p>
+      </div>
+
+      <div class="recruit-grid">
+        <article class="recruit-card">
+          <div class="recruit-icon">🛡️</div>
+          <h3>Модератор</h3>
+          <p>Следи за порядком, помогай игрокам и поддерживай атмосферу проекта.</p>
+          <ul class="recruit-list">
+            <li>Адекватное общение</li>
+            <li>Знание правил проекта</li>
+            <li>Готовность помогать игрокам</li>
+          </ul>
+          <a class="btn primary recruit-apply" href="https://discord.gg/jGNsNMfrD" target="_blank" rel="noopener">Подать заявку</a>
+        </article>
+
+        <article class="recruit-card">
+          <div class="recruit-icon">🔨</div>
+          <h3>Строитель</h3>
+          <p>Создавай карты, спавны и уникальные места для серверов Pristal.</p>
+          <ul class="recruit-list">
+            <li>Навыки строительства</li>
+            <li>Умение работать в команде</li>
+            <li>Портфолио приветствуется</li>
+          </ul>
+          <a class="btn primary recruit-apply" href="https://discord.gg/jGNsNMfrD" target="_blank" rel="noopener">Подать заявку</a>
+        </article>
+
+        <article class="recruit-card">
+          <div class="recruit-icon">🎥</div>
+          <h3>Медийка</h3>
+          <p>Снимай ролики и стримы на Pristal и помогай проекту расти.</p>
+          <ul class="recruit-list">
+            <li>YouTube или Twitch</li>
+            <li>Регулярный контент</li>
+            <li>Желание развивать проект</li>
+          </ul>
+          <a class="btn primary recruit-apply" href="https://discord.gg/jGNsNMfrD" target="_blank" rel="noopener">Подать заявку</a>
+        </article>
+
+        <article class="recruit-card">
+          <div class="recruit-icon">⚙️</div>
+          <h3>Технический специалист</h3>
+          <p>Помогай с плагинами, настройкой серверов и технической частью Pristal.</p>
+          <ul class="recruit-list">
+            <li>Java / Paper / плагины</li>
+            <li>Умение искать и исправлять ошибки</li>
+            <li>Ответственность</li>
+          </ul>
+          <a class="btn primary recruit-apply" href="https://discord.gg/jGNsNMfrD" target="_blank" rel="noopener">Подать заявку</a>
+        </article>
+
+        <article class="recruit-card">
+          <div class="recruit-icon">💬</div>
+          <h3>Помощник</h3>
+          <p>Начни свой путь в команде Pristal с помощи игрокам и участию в жизни проекта.</p>
+          <ul class="recruit-list">
+            <li>Активность</li>
+            <li>Грамотность</li>
+            <li>Доброжелательность</li>
+          </ul>
+          <a class="btn primary recruit-apply" href="https://discord.gg/jGNsNMfrD" target="_blank" rel="noopener">Подать заявку</a>
+        </article>
+
+        <article class="recruit-card">
+          <div class="recruit-icon">👑</div>
+          <h3>Другая роль</h3>
+          <p>Есть идея, чем ты можешь быть полезен проекту? Напиши нам в Discord.</p>
+          <ul class="recruit-list">
+            <li>Опиши свой опыт</li>
+            <li>Расскажи о своих навыках</li>
+            <li>Предложи направление</li>
+          </ul>
+          <a class="btn primary recruit-apply" href="https://discord.gg/jGNsNMfrD" target="_blank" rel="noopener">Связаться с командой</a>
+        </article>
+      </div>
+
+      <div class="recruit-info">
+        📢 <strong>Как подать заявку:</strong> нажми кнопку нужной роли и зайди на Discord-сервер проекта.
+        В заявке укажи свой Minecraft-ник, возраст, опыт и выбранную должность.
+      </div>
+    </div>
+  </section>
+
+  <section id="news">
+    <div class="container">
+      <div class="section-title">
+        <h2>Новости Pristal</h2>
+        <p>Последние события сети.</p>
+      </div>
+      <div class="news">
+        <article class="card"><small>PRISTAL SPM</small><h3>Добро пожаловать</h3><p>Новый сезон и новые возможности уже ждут игроков.</p></article>
+        <article class="card"><small>PRISTAL PVP</small><h3>Готовься к битве</h3><p>Проверь свои навыки и докажи, кто лучший на арене.</p></article>
+        <article class="card"><small>PRISTAL HARD</small><h3>Только для смелых</h3><p>Сложность повышается. Сможешь дойти до конца?</p></article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Pristal Network</span>
+    <span>Создатель: МрСкринч · Twitch: skrenhtv</span>
+  </div>
+</footer>
+
+<script>
+
+
+  document.querySelectorAll(".media-tab").forEach(tab=>{
+    tab.addEventListener("click",()=>{
+      document.querySelectorAll(".media-tab").forEach(t=>t.classList.remove("active"));
+      tab.classList.add("active");
+      const type=tab.dataset.media;
+      document.querySelectorAll(".media-card").forEach(card=>{
+        card.classList.toggle("hidden", type!=="all" && card.dataset.type!==type);
+      });
+    });
+  });
+
+  document.querySelectorAll(".leader-tab").forEach(tab=>{
+    tab.addEventListener("click",()=>{
+      document.querySelectorAll(".leader-tab").forEach(t=>t.classList.remove("active"));
+      document.querySelectorAll(".leader-panel").forEach(p=>p.classList.remove("active"));
+      tab.classList.add("active");
+      document.getElementById("leader-"+tab.dataset.panel).classList.add("active");
+    });
+  });
+  document.querySelectorAll(".copy").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const ip=btn.dataset.ip;
+      try{
+        await navigator.clipboard.writeText(ip);
+        const old=btn.textContent; btn.textContent="Скопировано!";
+        setTimeout(()=>btn.textContent=old,1200);
+      }catch(e){ alert("IP: "+ip); }
+    });
+  });
+</script>
+</body>
+</html>
